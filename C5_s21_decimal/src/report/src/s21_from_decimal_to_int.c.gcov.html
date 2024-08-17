@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - rep.info - src/s21_from_decimal_to_int.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory src">src</a> - s21_from_decimal_to_int.c<span style="font-size: 80%;"> (source / <a href="s21_from_decimal_to_int.c.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">rep.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">99.0&nbsp;%</td>
+            <td class="headerCovTableEntry">96</td>
+            <td class="headerCovTableEntry">95</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2024-07-26 16:18:46</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">5</td>
+          </tr>
+                  <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : #include &quot;s21_decimal.h&quot;</span>
+<span id="L2"><span class="lineNum">       2</span>              : </span>
+<span id="L3"><span class="lineNum">       3</span> <span class="tlaGNC tlaBgGNC">          64 : int s21_from_decimal_to_int(s21_decimal src, int *dst) {</span></span>
+<span id="L4"><span class="lineNum">       4</span>              :   // переменная res возвращает результат функции: 1 - fail, 0 - ok</span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC">          64 :   int res = 0;</span></span>
+<span id="L6"><span class="lineNum">       6</span>              :   // переменная, в которую будем записывать число из s21_decimal</span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">          64 :   int num = 0;</span></span>
+<span id="L8"><span class="lineNum">       8</span>              : </span>
+<span id="L9"><span class="lineNum">       9</span>              :   // проверка s21_decimal на корректность</span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">          64 :   int validity = validation_check(src);</span></span>
+<span id="L11"><span class="lineNum">      11</span>              : </span>
+<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">          64 :   if (validity || dst == NULL)</span></span>
+<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">           1 :     res = 1;</span></span>
+<span id="L14"><span class="lineNum">      14</span>              :   else {</span>
+<span id="L15"><span class="lineNum">      15</span>              :     // получаем знак</span>
+<span id="L16"><span class="lineNum">      16</span> <span class="tlaGNC">          63 :     int sign = (src.bits[3] &gt;&gt; 31) &amp; 1;</span></span>
+<span id="L17"><span class="lineNum">      17</span>              : </span>
+<span id="L18"><span class="lineNum">      18</span>              :     // 0xFF = 11111111, изолируем первые 8 бит, содерщащие степень</span>
+<span id="L19"><span class="lineNum">      19</span>              :     // определяем наличие степени и саму степень</span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">          63 :     int scale = (src.bits[3] &gt;&gt; 16) &amp; 0xFF;</span></span>
+<span id="L21"><span class="lineNum">      21</span>              : </span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">          63 :     if (scale != 0) {</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">          26 :       for (int i = 0; i &lt; scale; i++) {</span></span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">          25 :         s21_decimal my_num = div_to_ten(src);</span></span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">          25 :         src = my_num;</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">          25 :       }</span></span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">           1 :       if (src.bits[1] != 0 || src.bits[2] != 0)</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC tlaBgUNC">           0 :         res = 1;</span></span>
+<span id="L29"><span class="lineNum">      29</span>              :       else</span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC tlaBgGNC">           1 :         num = src.bits[0];</span></span>
+<span id="L31"><span class="lineNum">      31</span> <span class="tlaGNC">           1 :     }</span></span>
+<span id="L32"><span class="lineNum">      32</span> <span class="tlaGNC">          63 :     if (scale == 0 &amp;&amp; ((src.bits[3] &gt;&gt; 31) &amp; 1) == 0 &amp;&amp;</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">          39 :         src.bits[0] == 0b10000000000000000000000000000000)</span></span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">           1 :       res = 1;</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">          62 :     else if (scale == 0 &amp;&amp; src.bits[1] == 0 &amp;&amp; src.bits[2] == 0 &amp;&amp;</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">          58 :              src.bits[0] != 0xffffffff)</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">          57 :       num = src.bits[0];</span></span>
+<span id="L38"><span class="lineNum">      38</span>              : </span>
+<span id="L39"><span class="lineNum">      39</span>              :     // проверка на переполнение</span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">          63 :     if (src.bits[0] == 0xffffffff) res = 1;</span></span>
+<span id="L41"><span class="lineNum">      41</span>              : </span>
+<span id="L42"><span class="lineNum">      42</span>              :     // ставим знак</span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">          63 :     if (sign &amp;&amp; !res) num = -1 * num;</span></span>
+<span id="L44"><span class="lineNum">      44</span>              : </span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">          63 :     if (!res)</span></span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          58 :       *dst = num;</span></span>
+<span id="L47"><span class="lineNum">      47</span>              :     else</span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">           5 :       *dst = 0;</span></span>
+<span id="L49"><span class="lineNum">      49</span>              :   }</span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">          64 :   return res;</span></span>
+<span id="L51"><span class="lineNum">      51</span>              : }</span>
+<span id="L52"><span class="lineNum">      52</span>              : </span>
+<span id="L53"><span class="lineNum">      53</span>              : // деление на 10</span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">        1583 : s21_decimal div_to_ten(s21_decimal src) {</span></span>
+<span id="L55"><span class="lineNum">      55</span>              :   // создаем массив, в котором будет храниться полное число</span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaGNC">        1583 :   int arr[96] = {0};</span></span>
+<span id="L57"><span class="lineNum">      57</span>              : </span>
+<span id="L58"><span class="lineNum">      58</span>              :   // заполняем массив 0 и 1 из src</span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">        1583 :   int j = 2;</span></span>
+<span id="L60"><span class="lineNum">      60</span> <span class="tlaGNC">      153551 :   for (int i = 95; i &gt;= 0; i--) {</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">      151968 :     if (i &lt;= 63 &amp;&amp; i &gt;= 32) j = 1;</span></span>
+<span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">      151968 :     if (i &lt;= 31 &amp;&amp; i &gt;= 0) j = 0;</span></span>
+<span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">      151968 :     arr[i] = (src.bits[j] &gt;&gt; i) &amp; 1;</span></span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC">      151968 :   }</span></span>
+<span id="L65"><span class="lineNum">      65</span>              : </span>
+<span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">        1583 :   int index =</span></span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">        1583 :       beginning(arr);  // index - первое вхождение 1 (откуда начинается число)</span></span>
+<span id="L68"><span class="lineNum">      68</span>              : </span>
+<span id="L69"><span class="lineNum">      69</span> <span class="tlaGNC">        1583 :   int first = first_5_bits(</span></span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">        1583 :       arr,</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">        1583 :       index);  // берем первый 5 битов числа и записываем в переменную first</span></span>
+<span id="L72"><span class="lineNum">      72</span>              : </span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">        1583 :   int divisible = finding_the_first_divisible(</span></span>
+<span id="L74"><span class="lineNum">      74</span> <span class="tlaGNC">        1583 :       first, &amp;index);  // находим первое делимое (4 или 5 бит) и смещаем index</span></span>
+<span id="L75"><span class="lineNum">      75</span>              : </span>
+<span id="L76"><span class="lineNum">      76</span> <span class="tlaGNC">        1583 :   divisible -= 10;  // делимое дальше всегда будет равно остатку деления на 10</span></span>
+<span id="L77"><span class="lineNum">      77</span>              : </span>
+<span id="L78"><span class="lineNum">      78</span> <span class="tlaGNC">        1583 :   int res[96] = {0},</span></span>
+<span id="L79"><span class="lineNum">      79</span> <span class="tlaGNC">        1583 :       res_index = 1;  // массив для результата и индекс для этого массива</span></span>
+<span id="L80"><span class="lineNum">      80</span> <span class="tlaGNC">        1583 :   res[0] = 1;  // первый раз уже поделили, результат записали</span></span>
+<span id="L81"><span class="lineNum">      81</span>              : </span>
+<span id="L82"><span class="lineNum">      82</span>              :   // начинаем цикл с делением</span>
+<span id="L83"><span class="lineNum">      83</span> <span class="tlaGNC">       94456 :   for (int i = index; i &gt;= 0; i--) {</span></span>
+<span id="L84"><span class="lineNum">      84</span> <span class="tlaGNC">       92873 :     divisible =</span></span>
+<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">       92873 :         divisible</span></span>
+<span id="L86"><span class="lineNum">      86</span> <span class="tlaGNC">       92873 :         &lt;&lt; 1;  // делимое сдвигаем на 1, чтобы освободить место новому биту</span></span>
+<span id="L87"><span class="lineNum">      87</span> <span class="tlaGNC">       92873 :     if (arr[i]) divisible |= 1;  // если новый бит 1, то добавляем его в делимое</span></span>
+<span id="L88"><span class="lineNum">      88</span> <span class="tlaGNC">       92873 :     if (divisible &lt; 10) res[res_index++] = 0;</span></span>
+<span id="L89"><span class="lineNum">      89</span> <span class="tlaGNC">       92873 :     if (divisible &gt;= 10) {</span></span>
+<span id="L90"><span class="lineNum">      90</span> <span class="tlaGNC">       46243 :       divisible -= 10;  // отнимаем 10, обновляя делимое</span></span>
+<span id="L91"><span class="lineNum">      91</span> <span class="tlaGNC">       46243 :       res[res_index++] = 1;</span></span>
+<span id="L92"><span class="lineNum">      92</span> <span class="tlaGNC">       46243 :     }</span></span>
+<span id="L93"><span class="lineNum">      93</span> <span class="tlaGNC">       92873 :   }</span></span>
+<span id="L94"><span class="lineNum">      94</span>              : </span>
+<span id="L95"><span class="lineNum">      95</span> <span class="tlaGNC">        1583 :   int num_div_to_ten[96] = {</span></span>
+<span id="L96"><span class="lineNum">      96</span>              :       0};  // создаем массив, куда запишем 0 и 1 в правильном порядке</span>
+<span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC">        1583 :   int help = 0;  // вспомогательная переменная</span></span>
+<span id="L98"><span class="lineNum">      98</span>              : </span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaGNC">       96039 :   for (int i = res_index - 1; i &gt;= 0; i--)  // индекс с которого начнется запись</span></span>
+<span id="L100"><span class="lineNum">     100</span>              :                                             // числа (результат деления на 10)</span>
+<span id="L101"><span class="lineNum">     101</span> <span class="tlaGNC">       94456 :     num_div_to_ten[help++] = res[i];</span></span>
+<span id="L102"><span class="lineNum">     102</span>              : </span>
+<span id="L103"><span class="lineNum">     103</span>              :   // склеиваем в decimal 0 и 1 из массива с конечным результатом</span>
+<span id="L104"><span class="lineNum">     104</span> <span class="tlaGNC">        1583 :   s21_decimal my_num = {0};</span></span>
+<span id="L105"><span class="lineNum">     105</span>              : </span>
+<span id="L106"><span class="lineNum">     106</span> <span class="tlaGNC">        1583 :   int g = 2;</span></span>
+<span id="L107"><span class="lineNum">     107</span> <span class="tlaGNC">      153551 :   for (int i = 95; i &gt;= 0; i--) {</span></span>
+<span id="L108"><span class="lineNum">     108</span> <span class="tlaGNC">      151968 :     if (i &lt;= 63 &amp;&amp; i &gt;= 32) g = 1;</span></span>
+<span id="L109"><span class="lineNum">     109</span> <span class="tlaGNC">      151968 :     if (i &lt;= 31 &amp;&amp; i &gt;= 0) g = 0;</span></span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">      151968 :     if (num_div_to_ten[i] == 1) my_num.bits[g] |= 1;</span></span>
+<span id="L111"><span class="lineNum">     111</span> <span class="tlaGNC">      151968 :     if (i != 64 &amp;&amp; i != 32 &amp;&amp; i != 0) my_num.bits[g] = my_num.bits[g] &lt;&lt; 1;</span></span>
+<span id="L112"><span class="lineNum">     112</span> <span class="tlaGNC">      151968 :   }</span></span>
+<span id="L113"><span class="lineNum">     113</span>              : </span>
+<span id="L114"><span class="lineNum">     114</span> <span class="tlaGNC">        1583 :   return my_num;</span></span>
+<span id="L115"><span class="lineNum">     115</span>              : }</span>
+<span id="L116"><span class="lineNum">     116</span>              : </span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">        1583 : int beginning(int arr[]) {</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">        1583 :   int index = 0;</span></span>
+<span id="L119"><span class="lineNum">     119</span> <span class="tlaGNC">       53849 :   for (int i = 95; i &gt;= 0; i--) {</span></span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaGNC">       53849 :     if (arr[i] == 1) {</span></span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">        1583 :       index = i;</span></span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaGNC">        1583 :       break;</span></span>
+<span id="L123"><span class="lineNum">     123</span>              :     }</span>
+<span id="L124"><span class="lineNum">     124</span> <span class="tlaGNC">       52266 :   }</span></span>
+<span id="L125"><span class="lineNum">     125</span> <span class="tlaGNC">        1583 :   return index;</span></span>
+<span id="L126"><span class="lineNum">     126</span>              : }</span>
+<span id="L127"><span class="lineNum">     127</span>              : </span>
+<span id="L128"><span class="lineNum">     128</span> <span class="tlaGNC">        1583 : int first_5_bits(int arr[], int index) {</span></span>
+<span id="L129"><span class="lineNum">     129</span> <span class="tlaGNC">        1583 :   int num = 0;</span></span>
+<span id="L130"><span class="lineNum">     130</span> <span class="tlaGNC">        9498 :   for (int i = index; i &gt; index - 5; i--) {</span></span>
+<span id="L131"><span class="lineNum">     131</span> <span class="tlaGNC">        7915 :     if (arr[i]) num |= 1;</span></span>
+<span id="L132"><span class="lineNum">     132</span> <span class="tlaGNC">        7915 :     if (i != index - 4) num = num &lt;&lt; 1;</span></span>
+<span id="L133"><span class="lineNum">     133</span> <span class="tlaGNC">        7915 :   }</span></span>
+<span id="L134"><span class="lineNum">     134</span> <span class="tlaGNC">        1583 :   return num;</span></span>
+<span id="L135"><span class="lineNum">     135</span>              : }</span>
+<span id="L136"><span class="lineNum">     136</span>              : </span>
+<span id="L137"><span class="lineNum">     137</span> <span class="tlaGNC">        1583 : int finding_the_first_divisible(int first_num, int *index) {</span></span>
+<span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">        1583 :   int divisible = 0;</span></span>
+<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">        1583 :   if (((first_num &gt;&gt; 1) &amp; 0b1111) &gt;= 10) {</span></span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">        1086 :     divisible = ((first_num &gt;&gt; 1) &amp; 0b1111);  // делимое = первые 4 бита</span></span>
+<span id="L141"><span class="lineNum">     141</span> <span class="tlaGNC">        1086 :     *index -= 4;</span></span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">        1086 :   } else {</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">         497 :     divisible = first_num &amp; 0b11111;  // делимое = 5 битов</span></span>
+<span id="L144"><span class="lineNum">     144</span> <span class="tlaGNC">         497 :     *index -= 5;</span></span>
+<span id="L145"><span class="lineNum">     145</span>              :   }</span>
+<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">        1583 :   return divisible;</span></span>
+<span id="L147"><span class="lineNum">     147</span>              : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.1-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
